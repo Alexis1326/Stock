@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PostProductModule } from './postProduct/interfaces/module/postProduct.module';
 import { GetProductModule } from './getProduct/interfaces/module/getProduct.module';
 import { GetProductByIdModule } from './getProductById/interfaces/module/getProductById.module';
+import { PutProductByIdModule } from './putProductById/interfaces/module/putProductById.module';
 
 /**
  *  @description clase anotada con un decorador @Module(). El decorador @Module() proporciona
@@ -24,6 +25,7 @@ import { GetProductByIdModule } from './getProductById/interfaces/module/getProd
     PostProductModule,
     GetProductModule,
     GetProductByIdModule,
+    PutProductByIdModule,
     GlobalModule,
     MongooseModule.forRoot('mongodb+srv://Alexis:1234@stocks.0xf1g.mongodb.net/Stocks?retryWrites=true&w=majority&appName=Stocks'),
   ],
