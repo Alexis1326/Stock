@@ -3,7 +3,7 @@ import mongoose, { Document } from 'mongoose';
 import { CategoryEntity } from './category.entity';
 
 @Schema({ collection: 'Productos', timestamps: true })
-export class Product extends Document {
+export class ProductEntity extends Document {
   @Prop({ required: true })
   nombre: string;
 
@@ -15,15 +15,16 @@ export class Product extends Document {
 
   @Prop({ required: true })
   stock: number;
-
+  
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: CategoryEntity.name, required: true })
+  categoria: CategoryEntity;
+  
   @Prop({ required: true, default: 'activo' })
   estado: string;
 
   @Prop({ min: 0, max: 100 })
   descuento?: number;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: CategoryEntity.name, required: true })
-  categoria: CategoryEntity;
 }
 
-export const ProductSchema = SchemaFactory.createForClass(Product);
+export const ProductSchema = SchemaFactory.createForClass(ProductEntity);

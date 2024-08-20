@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { PostProductService } from '../../application/postProduct.service';
+import { getProductService } from '../../application/getProduct.service';
 import configuration from '../../../share/domain/resources/env.config';
-import { PostProductController } from '../controller/postProduct.controller';
+import { GetProductController } from '../controller/getProduct.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProductEntity, ProductSchema } from 'src/share/domain/entity/producto.entity';
+import { CategoryEntity, CategorySchema } from 'src/share/domain/entity/category.entity';
 
 /**
  *  @description clase anotada con un decorador @Module(). El decorador @Module() proporciona
@@ -24,9 +25,13 @@ import { ProductEntity, ProductSchema } from 'src/share/domain/entity/producto.e
         name: ProductEntity.name,
         schema: ProductSchema,
       },
+      {
+        name: CategoryEntity.name,
+        schema: CategorySchema,
+      },
     ]),
   ],
-  controllers: [PostProductController],
-  providers: [PostProductService],
+  controllers: [GetProductController],
+  providers: [getProductService],
 })
-export class PostProductModule {}
+export class GetProductModule {}
