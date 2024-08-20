@@ -14,9 +14,9 @@ import {
 } from '../../share/domain/resources/constants';
 import config from '../../share/domain/resources/env.config';
 import { ApiResponseDto } from '../../share/domain/dto/apiResponse.dto';
-import { NewContractResponse } from '../domain/dto/getProductResponse.dto';
+import { NewContractResponse } from '../domain/dto/getProductByIdResponse.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { ProductDto } from '../../share/domain/dto/productRequest.dto';
 import { ProductEntity } from '../../share/domain/entity/producto.entity';
 
@@ -27,8 +27,8 @@ import { ProductEntity } from '../../share/domain/entity/producto.entity';
  *
  */
 @Injectable()
-export class getProductService {
-  private readonly logger = new Logger(getProductService.name);
+export class getProducByIdtService {
+  private readonly logger = new Logger(getProducByIdtService.name);
   @Inject('TransactionId') private readonly transactionId: string;
 
   constructor(
@@ -38,48 +38,26 @@ export class getProductService {
     private readonly ProductModel: Model<ProductEntity>
   ) { }
 
-  public async getProduct(
-    page: number = 1,
-    limit: number = 10,
-    estado?: string,
-    categoria?: string,
-    nombre?: string,
+  public async getProductById(
+    id: string
   ): Promise<ApiResponseDto> {
     try {
       this.logger.log('procedimientoActivacion request', {
-        request: { page, limit, estado, categoria, nombre },
+        request:  'getProductById request', id ,
         transactionId: this.transactionId,
       });
 
-      const query: any = {};
-
-      if (estado) {
-        query.estado = estado;
+      if (!Types.ObjectId.isValid(id)) {
+        throw new HttpException('Invalid product ID', HttpStatus.BAD_REQUEST);
       }
 
-      if (categoria) {
-        query.categoria = categoria;
+      const producto = await this.ProductModel.findById(id).populate('categoria').exec();
+
+      if (!producto) {
+        throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
       }
 
-      if (nombre) {
-        query.nombre = { $regex: nombre, $options: 'i' };
-      }
-
-      const skip = (page - 1) * limit;
-
-      const productos = await this.ProductModel
-        .find(query)
-        .skip(skip)
-        .limit(limit)
-        .populate('categoria')
-        .exec();
-
-      const total = await this.ProductModel.countDocuments(query).exec();
-
-      return new ApiResponseDto(HttpStatus.OK, 'Products retrieved successfully', {
-        productos,
-        total,
-      });
+      return new ApiResponseDto(HttpStatus.OK, 'Product retrieved successfully', producto);
     } catch (error) {
       this.logger.error('Error en el método getProduct', {
         transactionId: this.transactionId,
