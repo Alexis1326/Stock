@@ -7,6 +7,8 @@ import { PostProductModule } from './postProduct/interfaces/module/postProduct.m
 import { GetProductModule } from './getProduct/interfaces/module/getProduct.module';
 import { GetProductByIdModule } from './getProductById/interfaces/module/getProductById.module';
 import { PutProductByIdModule } from './putProductById/interfaces/module/putProductById.module';
+import { DeleteProductByIdModule } from './deleteProductById/interfaces/module/deleteProductById.module';
+import { PostToSellProductByIdModule } from './postToSellProductById/interfaces/module/postToSellProductById.module';
 
 /**
  *  @description clase anotada con un decorador @Module(). El decorador @Module() proporciona
@@ -26,6 +28,8 @@ import { PutProductByIdModule } from './putProductById/interfaces/module/putProd
     GetProductModule,
     GetProductByIdModule,
     PutProductByIdModule,
+    DeleteProductByIdModule,
+    PostToSellProductByIdModule,
     GlobalModule,
     MongooseModule.forRoot('mongodb+srv://Alexis:1234@stocks.0xf1g.mongodb.net/Stocks?retryWrites=true&w=majority&appName=Stocks'),
   ],
