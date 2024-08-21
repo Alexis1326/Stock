@@ -12,6 +12,8 @@ import { PostToSellProductByIdModule } from './postToSellProductById/interfaces/
 import { PostCategoryModule } from './postCategory/interfaces/module/postCategory.module';
 import { GetCategoryModule } from './getCategory/interfaces/module/getCategory.module';
 import { GetCategoryByIdModule } from './getCategoryById/interfaces/module/getCategoryById.module';
+import { PutCategoryByIdModule } from './putCategoryById/interfaces/module/putCategoryById.module';
+import { DeleteCategoryByIdModule } from './deleteCategoryById/interfaces/module/deleteCategoryById.module';
 
 /**
  *  @description clase anotada con un decorador @Module(). El decorador @Module() proporciona
@@ -36,6 +38,8 @@ import { GetCategoryByIdModule } from './getCategoryById/interfaces/module/getCa
     PostCategoryModule,
     GetCategoryModule,
     GetCategoryByIdModule,
+    PutCategoryByIdModule,
+    DeleteCategoryByIdModule,
     GlobalModule,
     MongooseModule.forRoot('mongodb+srv://Alexis:1234@stocks.0xf1g.mongodb.net/Stocks?retryWrites=true&w=majority&appName=Stocks'),
   ],
