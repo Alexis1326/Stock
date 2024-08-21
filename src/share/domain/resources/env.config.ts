@@ -18,6 +18,12 @@ export default registerAs('configuration', () => ({
     connectString: process.env.DB_CONNECTSTRING,
   },
   NAMEPROCEDURE: process.env.NAME_PROCEDURE,
+  BD: {
+    USER: process.env.BD_USER,
+    PASSWORD: process.env.BD_PASSWORD,
+    ENVIRONMENT: process.env.ENVIRONMENT,
+    CONNECTIONS: process.env.CONNECTIONSTRING,
+  },
   APM: {
     HOST: process.env.ELASTIC_APM_SERVER_URL,
     ENVIRONMENT: process.env.ELASTIC_APM_ENVIRONMENT,

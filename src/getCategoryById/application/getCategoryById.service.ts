@@ -37,7 +37,7 @@ export class getCategoryByIdService {
         throw new HttpException('Invalid category ID', HttpStatus.BAD_REQUEST);
       }
 
-      const category = await this.CategoryModel.findById(id).exec();
+      const category = await this.CategoryModel.findById(id);
 
       if (!category) {
         throw new HttpException('Category not found', HttpStatus.NOT_FOUND);

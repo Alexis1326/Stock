@@ -71,12 +71,10 @@ export class putProducByIdtService {
         message: error.message,
       });
 
-      // Si el error tiene una respuesta HTTP específica, lanzarla
       if (error.response && error.status) {
         throw new HttpException(error.response, error.status);
       }
 
-      // Si es un error desconocido, devolver la excepción con más detalles
       throw new HttpException(
         {
           statusCode: HttpStatus.SERVICE_UNAVAILABLE,

@@ -47,21 +47,17 @@ export class PostProductService {
         transactionId: this.transactionId,
       });
       
-      // Buscar si el producto ya existe por nombre
       const existingProduct = await this.ProductModel.findOne({
         nombre: productDto.nombre,
       });
 
       if (existingProduct) {
-        // Si el producto existe se actualiza
         existingProduct.descripcion = productDto.descripcion ?? existingProduct.descripcion;
         existingProduct.precio = productDto.precio;
         existingProduct.descuento = productDto.descuento ?? existingProduct.descuento;
 
-        // Sumar el stock
         existingProduct.stock += productDto.stock;
 
-        // Si el stock actualizado es 0, el estado debe ser 'inactivo'
         if (existingProduct.stock === 0) {
           existingProduct.estado = 'inactivo';
         }
@@ -70,10 +66,8 @@ export class PostProductService {
 
         return new ApiResponseDto(HttpStatus.OK, 'successfully updated', []);
       } else {
-        // Si el producto no existe, crear uno nuevo
         const createdProduct = new this.ProductModel(productDto);
 
-        // Si el stock es 0, el estado es 'inactivo'
         if (createdProduct.stock === 0) {
           createdProduct.estado = 'inactivo';
         }

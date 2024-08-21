@@ -59,16 +59,14 @@ export class getProducByIdtService {
         throw new HttpException('Invalid product ID', HttpStatus.BAD_REQUEST);
       }
 
-      const producto = await this.ProductModel.findById(id).populate('categoria').exec();
+      const producto = await this.ProductModel.findById(id).populate('categoria');
 
       if (!producto) {
         throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
       }
 
-      // Calcular el precio final con descuento
       const precioFinal = this.calcularPrecioFinal(producto);
 
-      // Incluir el precio final en el producto
       const productoConPrecioFinal = {
         ...producto.toObject(),
         precio: precioFinal,

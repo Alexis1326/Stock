@@ -36,7 +36,6 @@ export class getProductService {
   private calcularPrecioFinal(producto: ProductEntity): number {
     const { precio, descuento } = producto;
 
-    // Verifica si el descuento es válido
     if (descuento && descuento > 0) {
       const precioConDescuento = precio - (precio * descuento) / 100;
       this.logger.log(
@@ -45,7 +44,6 @@ export class getProductService {
       return precioConDescuento;
     }
 
-    // Si no hay descuento, devolver el precio original
     return precio;
   }
 
@@ -64,14 +62,12 @@ export class getProductService {
 
       const query: any = {};
 
-      // Aplicar filtros basados en estado, categoría y nombre
       if (estado) query.estado = estado;
       if (categoria) query.categoria = categoria;
       if (nombre) query.nombre = { $regex: nombre, $options: 'i' };
 
       const skip = (page - 1) * limit;
 
-      // Obtener productos con los filtros y paginación
       const productos = await this.ProductModel
         .find(query)
         .skip(skip)

@@ -36,8 +36,7 @@ export class getCategoryService {
         transactionId: this.transactionId,
       });
 
-      // Obtener todas las categorías sin filtros ni paginación
-      const categorias = await this.CategoryModel.find().exec();
+      const categorias = await this.CategoryModel.find();
 
       return new ApiResponseDto(HttpStatus.OK, 'Categories retrieved successfully', {
         categorias,

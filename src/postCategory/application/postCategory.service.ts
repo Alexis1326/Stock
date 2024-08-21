@@ -49,16 +49,13 @@ export class PostCategoryService {
         transactionId: this.transactionId,
       });
 
-      // Buscar si la categoría ya existe por nombre
       const existingCategory = await this.CategoryModel.findOne({
         nombre: categoryDto.nombre,
       }).exec();
 
       if (existingCategory) {
-        // Si la categoría existe, no se permite la creación de una nueva categoría
         throw new HttpException('Category already exists', HttpStatus.BAD_REQUEST);
       } else {
-        // Si la categoría no existe, crear una nueva
         const createdCategory = new this.CategoryModel({
           nombre: categoryDto.nombre,
           descripcion: categoryDto.descripcion,

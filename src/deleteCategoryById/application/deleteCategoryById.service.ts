@@ -38,7 +38,7 @@ export class DeleteCategoryByIdService {
         throw new HttpException('Invalid category ID', HttpStatus.BAD_REQUEST);
       }
 
-      const deletedCategory = await this.CategoryModel.findByIdAndDelete(id).exec();
+      const deletedCategory = await this.CategoryModel.findByIdAndDelete(id);
 
       if (!deletedCategory) {
         throw new HttpException('Category not found', HttpStatus.NOT_FOUND);

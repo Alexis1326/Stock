@@ -39,12 +39,11 @@ export class PutCategoryByIdService {
         throw new HttpException('Invalid category ID', HttpStatus.BAD_REQUEST);
       }
 
-      // Buscar y actualizar la categoría
       const updatedCategory = await this.CategoryModel.findByIdAndUpdate(
         id,
         { $set: updateCategoryDto },
         { new: true, runValidators: true }
-      ).exec();
+      );
 
       if (!updatedCategory) {
         throw new HttpException('Category not found', HttpStatus.NOT_FOUND);

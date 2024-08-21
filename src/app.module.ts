@@ -1,5 +1,5 @@
 import { Logger, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigType } from '@nestjs/config';
 import configuration from './share/domain/resources/env.config';
 import { GlobalModule } from './share/domain/config/global.module';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -43,7 +43,7 @@ import { GetVentasByIdModule } from './getVentasById/interfaces/module/getCatego
     DeleteCategoryByIdModule,
     GetVentasByIdModule,
     GlobalModule,
-    MongooseModule.forRoot('mongodb+srv://Alexis:1234@stocks.0xf1g.mongodb.net/Stocks?retryWrites=true&w=majority&appName=Stocks'),
+    MongooseModule.forRoot(`mongodb+srv://Alexis:1234@stocks.0xf1g.mongodb.net/Stocks?retryWrites=true&w=majority&appName=Stocks`),
   ],
 })
 export class AppModule {}

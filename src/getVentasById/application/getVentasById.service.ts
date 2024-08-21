@@ -35,7 +35,7 @@ export class getVentasByIdService {
         transactionId: this.transactionId,
       });
 
-      const ventas = await this.ventasModel.find({ productoId: id }).exec();
+      const ventas = await this.ventasModel.find({ productoId: id });
 
       if (!ventas.length) {
         throw new NotFoundException('No se encontró historial de ventas para este producto');

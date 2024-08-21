@@ -56,21 +56,16 @@ export class postToSellProducByIdtService {
         throw new NotFoundException('Producto no encontrado');
       }
 
-      // Verificar si hay suficiente stock
       if (producto.stock < cantidad) {
         throw new Error('Stock insuficiente');
       }
 
-      // Reducir el stock del producto
       producto.stock -= cantidad;
 
-      // Calcular el precio final del producto con descuento
       const precioFinal = producto.precio - (producto.precio * producto.descuento / 100);
 
-      // Guardar los cambios en el producto
       await producto.save();
 
-      // Registrar la venta en la colección 'Ventas'
       const nuevaVenta = new this.saleModel({
         productoId: producto._id,
         cantidad,
