@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { postToSellProducByIdtService } from '../../application/postToSellProductById.service';
 import configuration from '../../../share/domain/resources/env.config';
-import { PostToSellProductByIdController } from '../controller/postToSellProductById.controller';
+import {  GetVentasController } from '../controller/getVentasById.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProductEntity, ProductSchema } from 'src/share/domain/entity/producto.entity';
 import { CategoryEntity, CategorySchema } from 'src/share/domain/entity/category.entity';
+import { getCategoryByIdService } from 'src/getCategoryById/application/getCategoryById.service';
+import { getVentasByIdService } from 'src/getVentasById/application/getVentasById.service';
 import { Ventas, VentasSchema } from 'src/share/domain/entity/ventas.entity';
 
 /**
@@ -23,20 +24,12 @@ import { Ventas, VentasSchema } from 'src/share/domain/entity/ventas.entity';
     }),
     MongooseModule.forFeature([
       {
-        name: ProductEntity.name,
-        schema: ProductSchema,
-      },
-      {
-        name: CategoryEntity.name,
-        schema: CategorySchema,
-      },
-      {
         name: Ventas.name,
         schema: VentasSchema,
-      }
+      },
     ]),
   ],
-  controllers: [PostToSellProductByIdController],
-  providers: [postToSellProducByIdtService],
+  controllers: [GetVentasController],
+  providers: [getVentasByIdService],
 })
-export class PostToSellProductByIdModule {}
+export class GetVentasByIdModule {}

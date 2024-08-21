@@ -4,49 +4,46 @@ import {
   Inject,
   Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 
 import config from '../../share/domain/resources/env.config';
 import { ApiResponseDto } from '../../share/domain/dto/apiResponse.dto';
+import { Model } from 'mongoose';
+import { Ventas } from 'src/share/domain/entity/ventas.entity';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { CategoryEntity } from '../../share/domain/entity/category.entity'; // Importa el modelo correcto
 
 @Injectable()
-export class DeleteCategoryByIdService {
-  private readonly logger = new Logger(DeleteCategoryByIdService.name);
+export class getVentasByIdService {
+  private readonly logger = new Logger(getVentasByIdService.name);
   @Inject('TransactionId') private readonly transactionId: string;
 
   constructor(
     @Inject(config.KEY) private configService: ConfigType<typeof config>,
-
-    @InjectModel(CategoryEntity.name)
-    private readonly CategoryModel: Model<CategoryEntity>
+    
+    @InjectModel(Ventas.name)
+    private readonly ventasModel: Model<Ventas>,
   ) { }
 
-  public async deleteCategoryById(
+  public async getVentasById(
     id: string
   ): Promise<ApiResponseDto> {
     try {
-      this.logger.log('DeleteCategoryById request', {
-        id,
+      this.logger.log('GetCategoryById request', {
+        id: id,
         transactionId: this.transactionId,
       });
 
-      if (!Types.ObjectId.isValid(id)) {
-        throw new HttpException('Invalid category ID', HttpStatus.BAD_REQUEST);
+      const ventas = await this.ventasModel.find({ productoId: id }).exec();
+
+      if (!ventas.length) {
+        throw new NotFoundException('No se encontró historial de ventas para este producto');
       }
 
-      const deletedCategory = await this.CategoryModel.findByIdAndDelete(id).exec();
-
-      if (!deletedCategory) {
-        throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
-      }
-
-      return new ApiResponseDto(HttpStatus.OK, 'Category deleted successfully', []);
+      return new ApiResponseDto(HttpStatus.OK, 'Category retrieved successfully', ventas);
     } catch (error) {
-      this.logger.error('Error in deleteCategoryById', {
+      this.logger.error('Error in getCategoryById', {
         transactionId: this.transactionId,
         stack: error.stack,
         message: error.message,
@@ -59,7 +56,7 @@ export class DeleteCategoryByIdService {
       throw new HttpException(
         {
           statusCode: HttpStatus.SERVICE_UNAVAILABLE,
-          message: 'Unexpected error deleting category',
+          message: 'Unexpected error retrieving category',
           error: error.message,
         },
         HttpStatus.SERVICE_UNAVAILABLE,

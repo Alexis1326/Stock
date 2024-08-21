@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 
@@ -17,6 +18,7 @@ import { ApiResponseDto } from '../../share/domain/dto/apiResponse.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { ProductEntity } from '../../share/domain/entity/producto.entity';
+import { Ventas } from 'src/share/domain/entity/ventas.entity';
 
 /**
  *  @description Clase servicio responsable recibir el parametro y realizar la logica de negocio.
@@ -33,44 +35,48 @@ export class postToSellProducByIdtService {
     @Inject(config.KEY) private configService: ConfigType<typeof config>,
 
     @InjectModel(ProductEntity.name)
-    private readonly ProductModel: Model<ProductEntity>
+    private readonly ProductModel: Model<ProductEntity>,
+
+    @InjectModel(Ventas.name)
+    private saleModel: Model<Ventas>
   ) { }
 
   public async postToSellProductById(
-    id: string,
-    quantity: number
+    productId: string,
+    cantidad: number
   ): Promise<ApiResponseDto> {
     try {
       this.logger.log('Solicitud para vender producto', {
-        request: 'postToSellProductById request', id, quantity,
+        request: 'postToSellProductById request', productId, cantidad,
         transactionId: this.transactionId,
       });
 
-      // Validar que el ID es válido
-      if (!Types.ObjectId.isValid(id)) {
-        throw new HttpException('Invalid product ID', HttpStatus.BAD_REQUEST);
-      }
-
-      // Encontrar el producto
-      const producto = await this.ProductModel.findById(id).exec();
-
+      const producto = await this.ProductModel.findById(productId);
       if (!producto) {
-        throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+        throw new NotFoundException('Producto no encontrado');
       }
 
-      // Verificar si el stock es suficiente
-      if (producto.stock < quantity) {
-        throw new HttpException('Insufficient stock', HttpStatus.BAD_REQUEST);
+      // Verificar si hay suficiente stock
+      if (producto.stock < cantidad) {
+        throw new Error('Stock insuficiente');
       }
 
-      // Reducir el stock
-      producto.stock -= quantity;
+      // Reducir el stock del producto
+      producto.stock -= cantidad;
+
+      // Calcular el precio final del producto con descuento
+      const precioFinal = producto.precio - (producto.precio * producto.descuento / 100);
+
+      // Guardar los cambios en el producto
       await producto.save();
 
-      if(producto.stock === 0) {
-        producto.estado = 'inactivo';
-        await producto.save();
-      }
+      // Registrar la venta en la colección 'Ventas'
+      const nuevaVenta = new this.saleModel({
+        productoId: producto._id,
+        cantidad,
+        precioUnitario: precioFinal,
+      });
+      await nuevaVenta.save(); 
 
       return new ApiResponseDto(HttpStatus.OK, 'Product sold successfully', producto);
     } catch (error) {

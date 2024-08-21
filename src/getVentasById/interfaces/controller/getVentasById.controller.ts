@@ -1,29 +1,22 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
   Inject,
   Logger,
   Param,
-  Post,
-  Put,
-  Query,
   Res,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { postToSellProducByIdtService } from '../../application/postToSellProductById.service';
 import { ProcessTimeService } from '../../../share/domain/config/processTime.service';
 import { SERVICE_PREFIX } from '../../../share/domain/resources/constants';
 import { ApiResponseDto } from '../../../share/domain/dto/apiResponse.dto';
 import { ApmInterceptor } from '../../../share/domain/config/apm.interceptor';
-import { UpdateProductoDto } from 'src/putProductById/domain/dto/updateProduct.dto';
+import { getVentasByIdService } from 'src/getVentasById/application/getVentasById.service';
 
 /**
- *  @description Archivo controlador responsable de manejar las solicitudes entrantes que llegan a un end point.
- *  En este caso seran posible acceder por medio de metodos http
+ *  @description Controlador para manejar la solicitud de obtener el historial de ventas de un producto específico.
  *
  *  @author Celula Azure
  *
@@ -31,12 +24,12 @@ import { UpdateProductoDto } from 'src/putProductById/domain/dto/updateProduct.d
 @ApiTags('productos')
 @Controller('productos')
 @UseInterceptors(ApmInterceptor)
-export class PostToSellProductByIdController {
-  private readonly logger = new Logger(PostToSellProductByIdController.name);
+export class GetVentasController {
+  private readonly logger = new Logger(GetVentasController.name);
   @Inject('TransactionId') private readonly transactionId: string;
 
   constructor(
-    private readonly service: postToSellProducByIdtService,
+    private readonly service: getVentasByIdService,
     private readonly processTimeService: ProcessTimeService,
   ) {}
 
@@ -44,19 +37,19 @@ export class PostToSellProductByIdController {
     type: ApiResponseDto,
     status: 200,
   })
-  @Post(':id/vender')
-  async postToSellProductById(
+  @Get(':id/historial-ventas')
+  async getVentas(
     @Res() res: Response,
     @Param('id') id: string,
-    @Body('cantidad') cantidad: number,
   ): Promise<void> {
     const processTime = this.processTimeService.start();
     try {
-      const serviceResponse = await this.service.postToSellProductById(id, cantidad);
-      res.status(serviceResponse.responseCode).json(serviceResponse);
+      const ventas = await this.service.getVentasById(id);
+      const response = new ApiResponseDto(200, 'Historial de ventas encontrado', ventas);
+      res.status(response.responseCode).json(response);
     } finally {
       this.logger.log(
-        `Consumo del servicio ${SERVICE_PREFIX}/NewContract finalizado`,
+        `Consumo del servicio ${SERVICE_PREFIX}/GetSalesHistory finalizado`,
         {
           totalProcessTime: processTime.end(),
           transactionId: this.transactionId,
