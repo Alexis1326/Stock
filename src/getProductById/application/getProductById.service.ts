@@ -20,12 +20,6 @@ import { Model, Types } from 'mongoose';
 import { ProductDto } from '../../share/domain/dto/productRequest.dto';
 import { ProductEntity } from '../../share/domain/entity/producto.entity';
 
-/**
- *  @description Clase servicio responsable recibir el parametro y realizar la logica de negocio.
- *
- *  @author Celula Azure
- *
- */
 @Injectable()
 export class getProducByIdtService {
   private readonly logger = new Logger(getProducByIdtService.name);
@@ -35,15 +29,29 @@ export class getProducByIdtService {
     @Inject(config.KEY) private configService: ConfigType<typeof config>,
 
     @InjectModel(ProductEntity.name)
-    private readonly ProductModel: Model<ProductEntity>
-  ) { }
+    private readonly ProductModel: Model<ProductEntity>,
+  ) {}
+
+  /**
+   * @description Método auxiliar para calcular el precio final con descuento
+   */
+  private calcularPrecioFinal(producto: ProductEntity): number {
+    const { precio, descuento } = producto;
+
+    if (descuento && descuento > 0) {
+      const precioConDescuento = precio - (precio * descuento) / 100;
+      return precioConDescuento;
+    }
+
+    return precio;
+  }
 
   public async getProductById(
     id: string
   ): Promise<ApiResponseDto> {
     try {
       this.logger.log('procedimientoActivacion request', {
-        request:  'getProductById request', id ,
+        request: 'getProductById request', id,
         transactionId: this.transactionId,
       });
 
@@ -57,24 +65,31 @@ export class getProducByIdtService {
         throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
       }
 
-      return new ApiResponseDto(HttpStatus.OK, 'Product retrieved successfully', producto);
+      // Calcular el precio final con descuento
+      const precioFinal = this.calcularPrecioFinal(producto);
+
+      // Incluir el precio final en el producto
+      const productoConPrecioFinal = {
+        ...producto.toObject(),
+        precio: precioFinal,
+      };
+
+      return new ApiResponseDto(HttpStatus.OK, 'Product retrieved successfully', productoConPrecioFinal);
     } catch (error) {
-      this.logger.error('Error en el método getProduct', {
+      this.logger.error('Error en el método getProductById', {
         transactionId: this.transactionId,
         stack: error.stack,
         message: error.message,
       });
 
-      // Si el error tiene una respuesta HTTP específica, lanzarla
       if (error.response && error.status) {
         throw new HttpException(error.response, error.status);
       }
 
-      // Si es un error desconocido, devolver la excepción con más detalles
       throw new HttpException(
         {
           statusCode: HttpStatus.SERVICE_UNAVAILABLE,
-          message: 'Error inesperado al recuperar los productos',
+          message: 'Error inesperado al recuperar el producto',
           error: error.message,
         },
         HttpStatus.SERVICE_UNAVAILABLE,

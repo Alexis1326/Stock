@@ -14,18 +14,10 @@ import {
 } from '../../share/domain/resources/constants';
 import config from '../../share/domain/resources/env.config';
 import { ApiResponseDto } from '../../share/domain/dto/apiResponse.dto';
-import { NewContractResponse } from '../domain/dto/getProductResponse.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ProductDto } from '../../share/domain/dto/productRequest.dto';
 import { ProductEntity } from '../../share/domain/entity/producto.entity';
 
-/**
- *  @description Clase servicio responsable recibir el parametro y realizar la logica de negocio.
- *
- *  @author Celula Azure
- *
- */
 @Injectable()
 export class getProductService {
   private readonly logger = new Logger(getProductService.name);
@@ -35,8 +27,27 @@ export class getProductService {
     @Inject(config.KEY) private configService: ConfigType<typeof config>,
 
     @InjectModel(ProductEntity.name)
-    private readonly ProductModel: Model<ProductEntity>
-  ) { }
+    private readonly ProductModel: Model<ProductEntity>,
+  ) {}
+
+  /**
+   * @description Método auxiliar para calcular el precio final con descuento
+   */
+  private calcularPrecioFinal(producto: ProductEntity): number {
+    const { precio, descuento } = producto;
+
+    // Verifica si el descuento es válido
+    if (descuento && descuento > 0) {
+      const precioConDescuento = precio - (precio * descuento) / 100;
+      this.logger.log(
+        `Producto ${producto.nombre}: Precio original ${precio}, Descuento ${descuento}%, Precio con descuento ${precioConDescuento}`,
+      );
+      return precioConDescuento;
+    }
+
+    // Si no hay descuento, devolver el precio original
+    return precio;
+  }
 
   public async getProduct(
     page: number = 1,
@@ -53,20 +64,14 @@ export class getProductService {
 
       const query: any = {};
 
-      if (estado) {
-        query.estado = estado;
-      }
-
-      if (categoria) {
-        query.categoria = categoria;
-      }
-
-      if (nombre) {
-        query.nombre = { $regex: nombre, $options: 'i' };
-      }
+      // Aplicar filtros basados en estado, categoría y nombre
+      if (estado) query.estado = estado;
+      if (categoria) query.categoria = categoria;
+      if (nombre) query.nombre = { $regex: nombre, $options: 'i' };
 
       const skip = (page - 1) * limit;
 
+      // Obtener productos con los filtros y paginación
       const productos = await this.ProductModel
         .find(query)
         .skip(skip)
@@ -74,10 +79,19 @@ export class getProductService {
         .populate('categoria')
         .exec();
 
+      const productosConPrecioFinal = productos.map(producto => {
+        const precioFinal = this.calcularPrecioFinal(producto);
+        
+        const productoObjeto = producto.toObject();
+        productoObjeto.precio = precioFinal;
+
+        return productoObjeto;
+      });
+
       const total = await this.ProductModel.countDocuments(query).exec();
 
       return new ApiResponseDto(HttpStatus.OK, 'Products retrieved successfully', {
-        productos,
+        productos: productosConPrecioFinal,
         total,
       });
     } catch (error) {
@@ -87,12 +101,10 @@ export class getProductService {
         message: error.message,
       });
 
-      // Si el error tiene una respuesta HTTP específica, lanzarla
       if (error.response && error.status) {
         throw new HttpException(error.response, error.status);
       }
 
-      // Si es un error desconocido, devolver la excepción con más detalles
       throw new HttpException(
         {
           statusCode: HttpStatus.SERVICE_UNAVAILABLE,

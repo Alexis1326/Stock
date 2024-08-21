@@ -14,4 +14,4 @@ export class Sale extends Document {
     precioUnitario: number;
 }
 
-export const SaleSchema = SchemaFactory.createForClass(Sale);
+export const VentasSchema = SchemaFactory.createForClass(Sale);

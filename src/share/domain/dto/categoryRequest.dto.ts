@@ -11,6 +11,6 @@ export class CategoryDto {
     @ApiProperty({ description: 'Descripción de la categoria' })
     @IsString()
     @IsOptional()
-    description: string;
+    descripcion: string;
 
 }
