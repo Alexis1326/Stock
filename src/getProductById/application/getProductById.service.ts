@@ -56,13 +56,13 @@ export class getProducByIdtService {
       });
 
       if (!Types.ObjectId.isValid(id)) {
-        throw new HttpException('Invalid product ID', HttpStatus.BAD_REQUEST);
+        throw new HttpException('id producto invalido', HttpStatus.BAD_REQUEST);
       }
 
       const producto = await this.ProductModel.findById(id).populate('categoria');
 
       if (!producto) {
-        throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Producto no encontrado', HttpStatus.NOT_FOUND);
       }
 
       const precioFinal = this.calcularPrecioFinal(producto);
@@ -72,7 +72,7 @@ export class getProducByIdtService {
         precio: precioFinal,
       };
 
-      return new ApiResponseDto(HttpStatus.OK, 'Product retrieved successfully', productoConPrecioFinal);
+      return new ApiResponseDto(HttpStatus.OK, 'Product traido exitosamente', productoConPrecioFinal);
     } catch (error) {
       this.logger.error('Error en el método getProductById', {
         transactionId: this.transactionId,

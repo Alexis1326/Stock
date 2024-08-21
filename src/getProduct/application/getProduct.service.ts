@@ -38,9 +38,6 @@ export class getProductService {
 
     if (descuento && descuento > 0) {
       const precioConDescuento = precio - (precio * descuento) / 100;
-      this.logger.log(
-        `Producto ${producto.nombre}: Precio original ${precio}, Descuento ${descuento}%, Precio con descuento ${precioConDescuento}`,
-      );
       return precioConDescuento;
     }
 
@@ -86,7 +83,7 @@ export class getProductService {
 
       const total = await this.ProductModel.countDocuments(query).exec();
 
-      return new ApiResponseDto(HttpStatus.OK, 'Products retrieved successfully', {
+      return new ApiResponseDto(HttpStatus.OK, 'Productos traidos exitosamente', {
         productos: productosConPrecioFinal,
         total,
       });

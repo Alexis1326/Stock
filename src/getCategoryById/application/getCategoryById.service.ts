@@ -34,13 +34,13 @@ export class getCategoryByIdService {
       });
 
       if (!Types.ObjectId.isValid(id)) {
-        throw new HttpException('Invalid category ID', HttpStatus.BAD_REQUEST);
+        throw new HttpException('id categoria invalida', HttpStatus.BAD_REQUEST);
       }
 
       const category = await this.CategoryModel.findById(id);
 
       if (!category) {
-        throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Categoria no encontrada', HttpStatus.NOT_FOUND);
       }
 
       return new ApiResponseDto(HttpStatus.OK, 'Category retrieved successfully', category);

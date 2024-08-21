@@ -64,7 +64,7 @@ export class PostProductService {
 
         await existingProduct.save();
 
-        return new ApiResponseDto(HttpStatus.OK, 'successfully updated', []);
+        return new ApiResponseDto(HttpStatus.OK, 'cambiado correctamente', []);
       } else {
         const createdProduct = new this.ProductModel(productDto);
 
@@ -74,7 +74,7 @@ export class PostProductService {
 
         await createdProduct.save();
 
-        return new ApiResponseDto(HttpStatus.OK, 'successfully created', []);
+        return new ApiResponseDto(HttpStatus.OK, 'creado correctamente', []);
       }
     } catch (error) {""
       this.logger.error(error.message, {

@@ -46,16 +46,16 @@ export class deleteProducByIdtService {
       });
 
       if (!Types.ObjectId.isValid(id)) {
-        throw new HttpException('Invalid product ID', HttpStatus.BAD_REQUEST);
+        throw new HttpException('id de producto invalido', HttpStatus.BAD_REQUEST);
       }
 
       const deletedProduct = await this.ProductModel.findByIdAndDelete(id).exec();
 
       if (!deletedProduct) {
-        throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Producto no encontrado', HttpStatus.NOT_FOUND);
       }
 
-      return new ApiResponseDto(HttpStatus.OK, 'Product deleted successfully', []);
+      return new ApiResponseDto(HttpStatus.OK, 'Producto borrado exitosamente', []);
     } catch (error) {
       this.logger.error('Error en el método getProduct', {
         transactionId: this.transactionId,

@@ -36,7 +36,7 @@ export class PutCategoryByIdService {
       });
 
       if (!Types.ObjectId.isValid(id)) {
-        throw new HttpException('Invalid category ID', HttpStatus.BAD_REQUEST);
+        throw new HttpException('categoia id invalida', HttpStatus.BAD_REQUEST);
       }
 
       const updatedCategory = await this.CategoryModel.findByIdAndUpdate(

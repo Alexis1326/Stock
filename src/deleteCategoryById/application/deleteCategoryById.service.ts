@@ -35,18 +35,18 @@ export class DeleteCategoryByIdService {
       });
 
       if (!Types.ObjectId.isValid(id)) {
-        throw new HttpException('Invalid category ID', HttpStatus.BAD_REQUEST);
+        throw new HttpException('id invalido', HttpStatus.BAD_REQUEST);
       }
 
       const deletedCategory = await this.CategoryModel.findByIdAndDelete(id);
 
       if (!deletedCategory) {
-        throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Categoria no encontrada', HttpStatus.NOT_FOUND);
       }
 
-      return new ApiResponseDto(HttpStatus.OK, 'Category deleted successfully', []);
+      return new ApiResponseDto(HttpStatus.OK, 'Category borrada exitosamente', []);
     } catch (error) {
-      this.logger.error('Error in deleteCategoryById', {
+      this.logger.error('Error deleteCategoryById', {
         transactionId: this.transactionId,
         stack: error.stack,
         message: error.message,

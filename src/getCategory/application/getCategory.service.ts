@@ -38,7 +38,7 @@ export class getCategoryService {
 
       const categorias = await this.CategoryModel.find();
 
-      return new ApiResponseDto(HttpStatus.OK, 'Categories retrieved successfully', {
+      return new ApiResponseDto(HttpStatus.OK, 'Categories traidas exitosamente', {
         categorias,
       });
     } catch (error) {

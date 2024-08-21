@@ -41,7 +41,7 @@ export class getVentasByIdService {
         throw new NotFoundException('No se encontró historial de ventas para este producto');
       }
 
-      return new ApiResponseDto(HttpStatus.OK, 'Category retrieved successfully', ventas);
+      return new ApiResponseDto(HttpStatus.OK, 'Category traida correctamente', ventas);
     } catch (error) {
       this.logger.error('Error in getCategoryById', {
         transactionId: this.transactionId,

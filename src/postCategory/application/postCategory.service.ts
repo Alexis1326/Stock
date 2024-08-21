@@ -54,7 +54,7 @@ export class PostCategoryService {
       }).exec();
 
       if (existingCategory) {
-        throw new HttpException('Category already exists', HttpStatus.BAD_REQUEST);
+        throw new HttpException('Category no existe', HttpStatus.BAD_REQUEST);
       } else {
         const createdCategory = new this.CategoryModel({
           nombre: categoryDto.nombre,
