@@ -76,7 +76,7 @@ export class PostProductService {
 
         return new ApiResponseDto(HttpStatus.OK, 'creado correctamente', []);
       }
-    } catch (error) {""
+    } catch (error) {
       this.logger.error(error.message, {
         transactionId: this.transactionId,
         stack: error.stack,

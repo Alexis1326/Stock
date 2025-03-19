@@ -55,8 +55,8 @@ export class putProducByIdtService {
 
       const updatedProducto = await this.ProductModel.findByIdAndUpdate(
         id,
-        { $set: updateProductoDto },
-        { new: true, runValidators: true },
+        updateProductoDto,
+        {new:true}
       ).exec();
 
       if (!updatedProducto) {
